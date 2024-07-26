@@ -23,7 +23,8 @@ export default [
       '@stylistic/js/object-curly-spacing': ['warn', 'always'],
       '@stylistic/js/multiline-comment-style': ['off', 'separate-lines'],
       '@stylistic/js/function-call-argument-newline': ["error", "consistent"],
-      '@stylistic/js/indent': ['warn', 4, { "SwitchCase": 1 }]
+      '@stylistic/js/indent': ['warn', 4, { "SwitchCase": 1 }],
+      '@stylistic/js/array-element-newline': ["error", { "minItems": 3 }]
 
     },
     languageOptions: { globals: globals.browser }
