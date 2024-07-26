@@ -76,7 +76,19 @@ export default class GraphBuilder {
 
         // if end is in validNextMoves -> done, push end on stack
         // otherwise, enqueue validNextMoves
-        console.log(validNextMoves);
+
+        queue = validNextMoves.slice(0, validNextMoves.length);
+        // console.log(validNextMoves);
+
+        console.log(queue);
+        let current;
+        while (queue.length > 0) {
+
+            current = queue.shift();
+
+            validNextMoves = this.getValidNextMoves(current).filter((move) => !this.isAlreadyChecked(move));
+
+        }
 
 
     }
@@ -84,39 +96,37 @@ export default class GraphBuilder {
     static knightMoves(start, end) {
 
         console.log(`Start: [${start}]; End: [${end}]`);
+        let queue = [];
+        let stack = [];
 
         let current = start;
-        let queue = [];
         queue.push(current);
 
-        let stack = [];
         let validNextMoves = [];
-        let currentShortest = [];
-        let bContinue = true;
 
         // is the end square in start square's valid moves?
+        while (queue.length > 0) {
 
-        // queue.push(validNextMoves.filter((move) => !this.isAlreadyChecked(move)));
-        for (let i = 0; i < 2; i++) {
+            // for (let i = 0; i < 2; i++) {
 
             current = queue.shift();
             stack.push(current);
-
-            validNextMoves = this.getValidNextMoves(current).filter((move) => !this.isAlreadyChecked(move));
-
-            this.hasChecked[this.coordToIndex(current)] = true;
-
             console.log('Current move is:');
             console.log(current);
 
+            validNextMoves = this.getValidNextMoves(current).filter((move) => !this.isAlreadyChecked(move));
             //
+
+            // if (this.isAlreadyChecked(current)) stack.push(current);
             if (this.isInValidNextMoves(validNextMoves, end)) {
 
                 console.log('End has been found!');
+                // stack.push(current);
                 stack.push(end);
-                stack.forEach((e) => currentShortest.push(e));
-                currentShortest.unshift(start);
-                console.log(currentShortest);
+                queue = [];
+                // stack.forEach((e) => currentShortest.push(e));
+                // currentShortest.unshift(start);
+                // console.log(currentShortest);
 
                 // stack.push(end);
 
@@ -125,19 +135,32 @@ export default class GraphBuilder {
 
                 console.log('Valid move not found');
                 // add that square's moves to the queue
-                validNextMoves.forEach((move) => queue.push(move));
-                stack.pop();
+                if (this.isAlreadyChecked(current) && !this.isSameSquare(stack[stack.length - 1], current)) {
+
+                    stack.push(current);
+                    queue.push(current);
+
+                } else {
+
+                    validNextMoves.forEach((move) => queue.push(move));
+                    queue.push(current);
+                    stack.pop();
+
+                }
 
             }
-
+            this.hasChecked[this.coordToIndex(current)] = true;
             console.log('Stack is currently: ');
             console.log(stack);
             console.log('Queue is currently: ');
             console.log(queue);
             console.log('\n');
 
-
         }
+        if (!this.isSameSquare(stack[0], start)) stack.unshift(start);
+        console.log('Stack is currently: ');
+        console.log(stack);
+        console.log('\n');
         // stack.unshift(start);
         // return an array describing the shortest path to the point
 
