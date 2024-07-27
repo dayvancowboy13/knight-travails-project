@@ -100,6 +100,7 @@ export default class GraphBuilder {
         let stack = [];
 
         let current = start;
+        let previous;
         queue.push(current);
 
         let validNextMoves = [];
@@ -107,62 +108,81 @@ export default class GraphBuilder {
         // is the end square in start square's valid moves?
         while (queue.length > 0) {
 
-            // for (let i = 0; i < 2; i++) {
-
+            previous = current;
             current = queue.shift();
-            stack.push(current);
+            // this.checkedPushToStack(stack, current);
             console.log('Current move is:');
             console.log(current);
 
             validNextMoves = this.getValidNextMoves(current).filter((move) => !this.isAlreadyChecked(move));
-            //
 
-            // if (this.isAlreadyChecked(current)) stack.push(current);
-            if (this.isInValidNextMoves(validNextMoves, end)) {
+            if (!this.isAlreadyChecked(current)) {
 
-                console.log('End has been found!');
-                // stack.push(current);
-                stack.push(end);
-                queue = [];
-                // stack.forEach((e) => currentShortest.push(e));
-                // currentShortest.unshift(start);
-                // console.log(currentShortest);
+                console.log(current + ' has NOT been checked yet, running check');
+                if (this.isInValidNextMoves(validNextMoves, end)) {
 
-                // stack.push(end);
-
-
-            } else {
-
-                console.log('Valid move not found');
-                // add that square's moves to the queue
-                if (this.isAlreadyChecked(current) && !this.isSameSquare(stack[stack.length - 1], current)) {
-
-                    stack.push(current);
-                    queue.push(current);
+                    console.log('End has been found!');
+                    // stack.push(current);
+                    stack.push(end);
+                    queue = [];
 
                 } else {
 
+                    console.log('Valid move not found');
+                    console.log('Adding children to queue');
+
+                    queue.push(current);
                     validNextMoves.forEach((move) => queue.push(move));
                     queue.push(current);
-                    stack.pop();
 
                 }
+                this.hasChecked[this.coordToIndex(current)] = true;
+
+            } else {
+
+                console.log(current + ' was previously checked');
+
+                if (this.isSameSquare(current, stack[stack.length - 1])) {
+
+                    console.log(current + '\'s children were just checked');
+                    stack.pop();
+
+                } else {
+
+                    console.log('About to start checking ' + current + '\'s children');
+                    // stack.push(current);
+                    this.checkedPushToStack(stack, current);
+
+                }
+                queue.push(current);
+                // queue.push(current);
+                // stack.pop();
 
             }
-            this.hasChecked[this.coordToIndex(current)] = true;
+
             console.log('Stack is currently: ');
             console.log(stack);
             console.log('Queue is currently: ');
             console.log(queue);
-            console.log('\n');
+            console.log('');
 
         }
-        if (!this.isSameSquare(stack[0], start)) stack.unshift(start);
-        console.log('Stack is currently: ');
+        // if (!this.isSameSquare(stack[0], start)) stack.unshift(start);
+        console.log('Loop done -- Stack is currently: ');
         console.log(stack);
-        console.log('\n');
-        // stack.unshift(start);
-        // return an array describing the shortest path to the point
+        console.log('');
+
+    }
+
+    static checkedPushToStack(stack, current) {
+
+        for (let i = 0; i < stack.length; i++) {
+
+            if (this.isSameSquare(stack[i], current)) return;
+
+        }
+
+        stack.push(current);
 
     }
 
@@ -187,9 +207,18 @@ export default class GraphBuilder {
 
     static isSameSquare(a, b) {
 
-        if (a[0] === b[0] && a[1] === b[1]) return true;
+        try {
 
-        else return false;
+            if (a[0] === b[0] && a[1] === b[1]) return true;
+
+            else return false;
+
+        } catch (err) {
+
+            return false;
+
+        }
+
 
     }
 
