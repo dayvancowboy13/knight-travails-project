@@ -16,7 +16,9 @@ export default [
     },
     rules: {
       "@stylistic/js/space-before-function-paren": ["off", 'never'],
-      // '@stylistic/js/space-before-function-paren': "off",
+      '@stylistic/js/space-before-function-paren': ["off", {
+        "named": "never"
+      }],
       '@stylistic/js/quotes': ['warn', 'single', { avoidEscape: true }],
       '@stylistic/js/eol-last': ['off', 'never'],
       '@stylistic/js/function-paren-newline': ["warn", { "minItems": 3 }],
